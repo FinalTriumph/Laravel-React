@@ -1,66 +1,161 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+## Laravel practice project
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+**Main steps and terminal commands used to create project (on Linux Ubuntu).**
 
-## About Laravel
+***This is not meant to be documentation or precise and detailed instructions, it's only to show some of the thought process and make notes for myself.***
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+This project is build by starting with replicating https://github.com/FinalTriumph/Laravel-Simple-Auth (while also testing it once more).
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+Install React and ReactDOM:
+```
+npm install react react-dom
+```
+And Vite plugin for React:
+```
+npm install @vitejs/plugin-react
+```
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+Then in `/resources/js` create new folder `pages` and `Welcome.jsx` file in it, with content like this:
+```
+import React from 'react';
 
-## Learning Laravel
+const Welcome = () => {
+    return (
+        <div className="bg-slate-700 m-8 p-4 rounded-md">
+            <h1 className="text-white font-bold">Welcome, Guest!</h1>
+        </div>
+    );
+};
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+export default Welcome;
+```
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+Then rename `/resources/js/app.js` to `/resources/js/app.jsx` and change file content to this:
+```
+import './bootstrap';
+import '../css/app.css';
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+import ReactDOM from 'react-dom/client';
+import Welcome from './components/Welcome';
 
-## Laravel Sponsors
+ReactDOM.createRoot(document.getElementById('welcome')).render(<Welcome />);
+```
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+Now need to make adjustments in `vite.config.js` to use React, can make it look like this:
+```
+import { defineConfig } from 'vite';
+import laravel from 'laravel-vite-plugin';
+import react from '@vitejs/plugin-react';
 
-### Premium Partners
+export default defineConfig({
+    plugins: [
+        laravel({
+            input: ['resources/js/app.jsx'],
+        }),
+        react(),
+    ],
+});
+```
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+Then can go to `/resources/views/welcome.blade.php` and add:
+```
+<div id="welcome"></div>
+```
+While also making couple other adjustments, to make it look like this:
+```
+<x-layout>
+    <div class="h-screen flex flex-col items-center justify-center">
+        <div id="welcome"></div>
+        <div>
+            <a href="{{ route('register') }}" class="btn-action">Register</a>
+            <a href="{{ route('login') }}" class="btn-action">Login</a>
+        </div>
+    </div>
+</x-layout>
+```
 
-## Contributing
+Also need to make couple changes in `/resources/views/components/layout.blade.php`, replacing `@vite(['resources/css/app.css', 'resources/js/app.js'])` with:
+```
+@viteReactRefresh
+@vite('resources/js/app.jsx')
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+Now can start dev server and test if everything works.
+And I notice something weird related to using Tailwind in `/resources/js/pages/Welcome.jsx`, so I'm adding also this in `tailwind.config.js`:
+```
+'./resources/**/*.jsx'
+```
+And now looks like everything works properly.
 
-## Code of Conduct
+Next create `Home.jsx` in `resources/js/pages`:
+```
+import React from 'react';
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+const Home = () => {
+    return (
+        <div className="bg-slate-700 m-8 p-4 rounded-md">
+            <h1 className="text-white font-bold">Welcome, User!</h1>
+        </div>
+    );
+};
 
-## Security Vulnerabilities
+export default Home;
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+Then adjust `/resources/js/app.jsx` to look like this:
+```
+import './bootstrap';
+import '../css/app.css';
 
-## License
+import ReactDOM from 'react-dom/client';
+import Welcome from './pages/Welcome';
+import Home from './pages/Home';
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+const welcome = document.getElementById('welcome');
+if (welcome) {
+    ReactDOM.createRoot(welcome).render(<Welcome />);
+}
+
+const home = document.getElementById('home');
+if (home) {
+    ReactDOM.createRoot(home).render(<Home />)
+}
+```
+
+Then in `/resources/views/home.blade.php` add `<div id="home"></div>` like in `/resources/views/welcome.blade.php`.
+
+Now can try to login and test if everything will work properly.
+
+Next, to pass props from Blade view to React, can start by adjusting `<div id="home"></div>` in `/resources/js/pages/Home.jsx` to look like this:
+```
+<div id="home" data-name="{{ auth()->user()->name }}"></div>
+```
+And, in `/resources/js/app.jsx`, part which renders home page, to look like this:
+```
+const home = document.getElementById('home');
+if (home) {
+    const props = Object.assign({}, home.dataset);
+
+    ReactDOM.createRoot(home).render(<Home {...props} />)
+}
+```
+Then adjust `/resources/js/pages/Home.jsx` to look like this:
+```
+import React from 'react';
+
+const Home = (props) => {
+    const { name } = props;
+
+    return (
+        <div className="bg-slate-700 m-8 p-4 rounded-md">
+            <h1 className="text-white font-bold">Welcome, {name}!</h1>
+        </div>
+    );
+};
+
+export default Home;
+```
+
+And in the same way can pass `email` and show it with React instead of Blade.
+
+Now can test again if everything works properly. And for this project that's all, as it's meant to just make some notes about basic things when setting up React with Laravel.
