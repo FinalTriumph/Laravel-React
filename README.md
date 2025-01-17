@@ -4,7 +4,7 @@
 
 ***This is not meant to be documentation or precise and detailed instructions, it's only to show some of the thought process and make notes for myself.***
 
-This project is build by starting with replicating https://github.com/FinalTriumph/Laravel-Simple-Auth (while also testing it once more).
+This project is built by starting with replicating https://github.com/FinalTriumph/Laravel-Simple-Auth (while also testing it once more).
 
 Install React and ReactDOM:
 ```
@@ -36,7 +36,7 @@ import './bootstrap';
 import '../css/app.css';
 
 import ReactDOM from 'react-dom/client';
-import Welcome from './components/Welcome';
+import Welcome from './pages/Welcome.jsx';
 
 ReactDOM.createRoot(document.getElementById('welcome')).render(<Welcome />);
 ```
